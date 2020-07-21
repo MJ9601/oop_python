@@ -1,0 +1,2 @@
+git remote add origin https://github.com/MJ9601/oop_python.git
+git push -u origin master
