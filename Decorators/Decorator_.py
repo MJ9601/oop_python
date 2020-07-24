@@ -194,4 +194,32 @@ def display_info(name,age):
 
 display_info('sue',35)
 
+#example 6
+#creating decorator which take arguments as
+"""if you try to pass to decorator to a function the below line actually will happen
+display=logger(timer_function(display))
+which it cause that the inner function of timer_function (wrapper) get passed to the logger (try it to see what happens) which we don't want to happen
+we want to that original function get passed to the both logger and timer function
+so we use the wraps decorator to make that happen
+"""
 
+print('-------------example 6--------------------')
+
+def prefixed_Decorator(arg):
+    def decorator_function(org_function):
+        def wrapper(*args, **kwargs):
+            print(arg, 'Executing Before', org_function.__name__)
+            result = org_function(*args, **kwargs)
+            print(arg, 'Executing After', org_function.__name__)
+            return result
+        return wrapper
+    return decorator_function
+
+
+@prefixed_Decorator('logging:')
+def display_info(name,age):
+    print('display_info ran with argument ({},{})'.format(name,age))
+
+
+display_info('sue',35)
+display_info('john',23)
