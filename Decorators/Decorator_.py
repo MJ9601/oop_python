@@ -1,5 +1,4 @@
-#DEcorator
-
+# DEcorator
 
 
 # first class function allows us to tread function as object
@@ -15,28 +14,35 @@
 # add anythings you want
 
 # example 1
-#simplest decorator that can be found
+# simplest decorator that can be found
+from functools import wraps
 print('-------------example 1--------------------')
+
+
 def decorator_function(orig_function):
     def wrapper_function():
         return orig_function()
-    return wrapper_function #the wrapper_function is waited to be executed
+    return wrapper_function  # the wrapper_function is waited to be executed
+
+
 @decorator_function
 def display():
     print('display function ran')
 
-#display = decorator_function(display)  
+
+#display = decorator_function(display)
 """ above line (is) does the same as @decorater_function"""
 display()
 
 
-
-
 # example 2
 print('-------------example 2--------------------')
+
+
 def decorator_function(orig_function):
-    def wrapper_function(*args, **kwargs):# adding *args and **kwargs allows to the decorator to be able to accepts multiple arbitrary arguments
-        print ('wrapper has been excuted before {}'.format(orig_function.__name__))
+    # adding *args and **kwargs allows to the decorator to be able to accepts multiple arbitrary arguments
+    def wrapper_function(*args, **kwargs):
+        print('wrapper has been excuted before {}'.format(orig_function.__name__))
         return orig_function(*args, **kwargs)
     return wrapper_function
 
@@ -45,109 +51,115 @@ def decorator_function(orig_function):
 def display():
     print('display function ran')
 
-#display = decorator_function(display)  
+
+#display = decorator_function(display)
 """ above line (is) does the same as @decorater_function"""
-#display()
+# display()
 
 
 @decorator_function
-def display_info(name,age):
-    print('display_info ran with argument ({},{})'.format(name,age))
+def display_info(name, age):
+    print('display_info ran with argument ({},{})'.format(name, age))
 
 
-
-display_info('joe',19)
-
+display_info('joe', 19)
 
 
-#example 3
+# example 3
 # decorator class
 
 print('-------------example 3--------------------')
-#this decorator class does the same as the previous decorator function
+# this decorator class does the same as the previous decorator function
+
+
 class MyDecorator(object):
-    def __init__(self,orig_function): #for outer function we should used the __init__ method
+    def __init__(self, orig_function):  # for outer function we should used the __init__ method
         self.orig_function = orig_function
 
-    def __call__(self,*args,**kwargs): # for wrapper function we should use the __call__ method just remember to don't forget the ##self 
-        print ('call method has been excuted before {}'.format(self.orig_function.__name__))
+    # for wrapper function we should use the __call__ method just remember to don't forget the ##self
+    def __call__(self, *args, **kwargs):
+        print('call method has been excuted before {}'.format(
+            self.orig_function.__name__))
         return self.orig_function(*args, **kwargs)
-
 
 
 @MyDecorator
 def display():
     print('display function ran')
 
-#display = decorator_function(display)  
+
+#display = decorator_function(display)
 """ above line (is) does the same as @decorater_function"""
-#display()
+# display()
 
 
 @MyDecorator
-def display_info(name,age):
-    print('display_info ran with argument ({},{})'.format(name,age))
+def display_info(name, age):
+    print('display_info ran with argument ({},{})'.format(name, age))
 
 
-display_info('joe',19)
+display_info('joe', 19)
 
 
-
-#example 4
+# example 4
 # logger
-#timer_decorator
+# timer_decorator
 
 print('-------------example 4--------------------')
+
+
 def logger(orig_function):
     import logging
-    logging.basicConfig(filename='{}.log'.format(orig_function.__name__), level=logging.INFO)
+    logging.basicConfig(filename='{}.log'.format(
+        orig_function.__name__), level=logging.INFO)
+
     def wrapper(*args, **kwargs):
         logging.info(
-            'Ran with args: {} and keyargument:{}'.format (args, kwargs))
-        return orig_function(*args,**kwargs)
+            'Ran with args: {} and keyargument:{}'.format(args, kwargs))
+        return orig_function(*args, **kwargs)
 
     return wrapper
 
 
 def timer_function(orig_function):
     import time
+
     def wrapper(*args, **kwargs):
-        t_=time.time()
-        result = orig_function(*args,**kwargs)
+        t_ = time.time()
+        result = orig_function(*args, **kwargs)
         t__ = time.time()-t_
-        print('{} has been executed and {} second was duration of excution'.format(orig_function.__name__,t__))
+        print('{} has been executed and {} second was duration of excution'.format(
+            orig_function.__name__, t__))
         return result
     return wrapper
 
 
-
-
 @timer_function
-def display_info(name,age):
+def display_info(name, age):
 
     import time
     time.sleep(2)
-    print('display_info ran with argument ({},{})'.format(name,age))
+    print('display_info ran with argument ({},{})'.format(name, age))
 
 
-display_info('joe',19)
+display_info('joe', 19)
+
 
 @logger
-def display_info(name,age):
+def display_info(name, age):
 
     import time
     time.sleep(2)
-    print('display_info ran with argument ({},{})'.format(name,age))
+    print('display_info ran with argument ({},{})'.format(name, age))
 
 
-display_info('joe',19)
+display_info('joe', 19)
 
 
-
-#example 5
+# example 5
 # logger
-#timer_decorator
-#using both on a function using wraps
+# timer_decorator
+# using both on a function using wraps
 """if you try to pass to decorator to a function the below line actually will happen
 display=logger(timer_function(display))
 which it cause that the inner function of timer_function (wrapper) get passed to the logger (try it to see what happens) which we don't want to happen
@@ -157,45 +169,50 @@ so we use the wraps decorator to make that happen
 
 print('-------------example 5--------------------')
 
-from functools import wraps
+
 def logger(orig_function):
     import logging
-    logging.basicConfig(filename='{}.log'.format(orig_function.__name__), level=logging.INFO)
-    @wraps(orig_function)#if you add wraps decorator to the wrapper function in every decorator function it pass the original function to the next decorator
+    logging.basicConfig(filename='{}.log'.format(
+        orig_function.__name__), level=logging.INFO)
+
+    # if you add wraps decorator to the wrapper function in every decorator function it pass the original function to the next decorator
+    @wraps(orig_function)
     def wrapper(*args, **kwargs):
         logging.info(
-            'Ran with args: {} and keyargument:{}'.format (args, kwargs))
-        return orig_function(*args,**kwargs)
+            'Ran with args: {} and keyargument:{}'.format(args, kwargs))
+        return orig_function(*args, **kwargs)
 
     return wrapper
 
 
 def timer_function(orig_function):
     import time
-    @wraps(orig_function) #if you add wraps decorator to the wrapper function in every decorator function it pass the original function to the next decorator
+
+    # if you add wraps decorator to the wrapper function in every decorator function it pass the original function to the next decorator
+    @wraps(orig_function)
     def wrapper(*args, **kwargs):
-        t_=time.time()
-        result = orig_function(*args,**kwargs)
+        t_ = time.time()
+        result = orig_function(*args, **kwargs)
         t__ = time.time()-t_
-        print('{} has been executed and {} second was duration of excution'.format(orig_function.__name__,t__))
+        print('{} has been executed and {} second was duration of excution'.format(
+            orig_function.__name__, t__))
         return result
     return wrapper
 
 
-
 @logger
 @timer_function
-def display_info(name,age):
+def display_info(name, age):
 
     import time
     time.sleep(2)
-    print('display_info ran with argument ({},{})'.format(name,age))
+    print('display_info ran with argument ({},{})'.format(name, age))
 
 
-display_info('sue',35)
+display_info('sue', 35)
 
-#example 6
-#creating decorator which take arguments as
+# example 6
+# creating decorator which take arguments as
 """if you try to pass to decorator to a function the below line actually will happen
 display=logger(timer_function(display))
 which it cause that the inner function of timer_function (wrapper) get passed to the logger (try it to see what happens) which we don't want to happen
@@ -204,6 +221,7 @@ so we use the wraps decorator to make that happen
 """
 
 print('-------------example 6--------------------')
+
 
 def prefixed_Decorator(arg):
     def decorator_function(org_function):
@@ -217,9 +235,9 @@ def prefixed_Decorator(arg):
 
 
 @prefixed_Decorator('logging:')
-def display_info(name,age):
-    print('display_info ran with argument ({},{})'.format(name,age))
+def display_info(name, age):
+    print('display_info ran with argument ({},{})'.format(name, age))
 
 
-display_info('sue',35)
-display_info('john',23)
+display_info('sue', 35)
+display_info('john', 23)
